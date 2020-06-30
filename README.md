@@ -1,2 +1,2 @@
 # cpf-diff-init
-Conditional particle filters with diffuse initial distributions
+Materials for the article "Conditional particle filters with diffuse initial distributions"
