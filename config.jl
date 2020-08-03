@@ -1,4 +1,4 @@
-## File containing important paths and settings related to the project.
+## File containing settings and important paths related to the project.
 
 # Shorthands for frequently used types.
 const AVec = AbstractVector;
@@ -7,6 +7,7 @@ const AFloat = AbstractFloat;
 
 # Globals for referencing certain paths in the project.
 const PROJECT_ROOT = @__DIR__;
+const PROJECT_NAME = basename(PROJECT_ROOT);
 const SRC_PATH = joinpath(PROJECT_ROOT, "src");
 const LIB_PATH = joinpath(SRC_PATH, "julia", "lib");
 const MODELS_PATH = joinpath(SRC_PATH, "julia", "models");
@@ -37,5 +38,18 @@ const SIMULATION_DATA_URL = "https://nextcloud.jyu.fi/index.php/s/zjeiwDoxaegGcR
 # This ensures that there is no additional variance from
 # sampling and all variability is in the parameters.
 const DATA_SIM_SEED = 75399237;
+
+# Activate the environment related to the project (if not already activated).
+import Pkg
+if PROJECT_NAME != basename(dirname(Base.active_project()))
+    Pkg.activate(".");
+end
+
+# Setup Julia to only load code from standard library and active environment,
+# and LIB_PATH.
+empty!(LOAD_PATH);
+push!(LOAD_PATH, "@");
+push!(LOAD_PATH, "stdlib");
 push!(LOAD_PATH, LIB_PATH);
+
 nothing;
