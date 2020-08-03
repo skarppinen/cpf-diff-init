@@ -11,17 +11,18 @@ This script will install all Julia packages that are required by the project.
 
 ## Descriptions of the source code files in the project
 
-#### config.jl
+The relevant source code files are found in: 
+<!--#### config.jl
 Configuration related to the project.
 
 #### Manifest.jl and Project.jl
-Configuration files related to Julia packages used in this project.
+Configuration files related to Julia packages used in this project. -->
 
 #### /data/covid/
 Data used in the COVID-19 stochastic SEIR example.
 
-#### /src/config/parse_settings.jl
-Configuration related to the command line interface of the scripts in /src/scripts/.
+<!-- #### /src/config/parse_settings.jl
+Configuration related to the command line interface of the scripts in /src/scripts/. -->
 
 #### /src/lib/
 Functionality related to particle filtering and implementations of the methods
@@ -45,6 +46,8 @@ julia run-*.jl --help
 for usage instructions.
 These scripts produce raw simulation output, which can be be postprocessed with the script `postprocess-simulations.jl`.
 See the help for this script for further details.
+
+Running the scripts in this folder will produce a new folder `output` containing the generated data.
 
 [julia]: https://julialang.org/
 [julia-downloads]: https://julialang.org/downloads/
