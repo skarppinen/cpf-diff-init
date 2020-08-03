@@ -12,6 +12,7 @@ using Statistics
 
 ## Generate plots folder.
 mkpath(PLOTS_PATH);
+println(string("Producing plots to ", PLOTS_PATH, "."));
 
 ## Data load.
 # Load noisyar and sv summaries with fully diffuse initialisation.

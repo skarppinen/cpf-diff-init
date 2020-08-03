@@ -1,13 +1,13 @@
 # cpf-diff-init
-Source code and materials related to the article "Conditional particle filters with diffuse initial distributions" [(Karppinen and Vihola, 2020)][arxiv].
-The code is written in [Julia] version 1.3.1.
+Source code and materials related to the article _Conditional particle filters with diffuse initial distributions_ [(Karppinen and Vihola, 2020)][arxiv].
+The code is written in [Julia] (version 1.3.1).
 
 ## Getting started
 
-1. Clone the project with `git clone https://github.com/skarppinen/cpf-diff-init.git`.
-2. Inside the project folder `cpf-diff-init`, run `julia install_dependencies.jl`. 
-This will install all Julia packages required by the project. 
-For compatibility it is best to use Julia version 1.3.1.
+1. [Install Julia][julia-downloads]. For compatibility it is best to use version 1.3.1.
+2. Clone the project with `git clone https://github.com/skarppinen/cpf-diff-init.git`.
+3. Inside the project folder `cpf-diff-init`, run `julia install_dependencies.jl`. 
+This script will install all Julia packages that are required by the project. 
 
 ## Descriptions of the source code files in the project
 
@@ -47,5 +47,6 @@ These scripts produce raw simulation output, which can be be postprocessed with 
 See the help for this script for further details.
 
 [julia]: https://julialang.org/
+[julia-downloads]: https://julialang.org/downloads/
 [data-repo]: https://nextcloud.jyu.fi/index.php/s/zjeiwDoxaegGcRe
 [arxiv]: https://arxiv.org/abs/2006.14877

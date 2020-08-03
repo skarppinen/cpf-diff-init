@@ -14,6 +14,7 @@ using Distributions
 
 ## Generate the plots path.
 mkpath(PLOTS_PATH);
+println(string("Producing plots to ", PLOTS_PATH, "."));
 
 ## Load data.
 dpg_cpf_seir = load_summary("dpg-cpf-seir-summary.jld2");
