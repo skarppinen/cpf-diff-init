@@ -4,8 +4,8 @@ The code is written in [Julia] version 1.3.1.
 
 ## Getting started
 
-1. Clone the project.
-2. From the project folder, run `julia install_dependencies.jl`. 
+1. Clone the project with `git clone https://github.com/skarppinen/cpf-diff-init.git`.
+2. Inside the project folder `cpf-diff-init`, run `julia install_dependencies.jl`. 
 This will install all Julia packages required by the project. 
 For compatibility it is best to use Julia version 1.3.1.
 
