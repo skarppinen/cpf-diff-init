@@ -41,7 +41,7 @@ After downloading, the scripts beginning with `analyse` can be run to reproduce 
 If needed, the individual experiments can also be run with the scripts beginning with `run`.
 Type
 ```
-julia run-*.jl --help
+julia run-*experiment-name*.jl --help
 ```
 for usage instructions.
 These scripts produce raw simulation output, which can be postprocessed with the script `postprocess-simulations.jl`.
