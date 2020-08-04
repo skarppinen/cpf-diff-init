@@ -54,14 +54,14 @@ function get_covid_data(; filename::AbstractString = "",
         # File is requested for download, or there is no COVID data.
         download_covid_data();
         filepath = latest_covid_filepath();
-        data = CSV.read(filepath; copycols = true);
+        data = CSV.read(filepath, DataFrame; copycols = true);
     else
         if filename == ""
             filepath = latest_covid_filepath();
         else
             filepath = joinpath(COVID_DATA_PATH, filename);
         end
-        data = CSV.read(filepath; copycols = true);
+        data = CSV.read(filepath, DataFrame; copycols = true);
     end
 
     # Data has been loaded, subset to include only the region requested.
@@ -83,13 +83,13 @@ Function downloads the latest Finnish COVID data from THL to
 """
 function download_covid_data()
     # Get data about tests.
-    tests = CSV.read(download(THL_TESTS_URL));
+    tests = CSV.read(download(THL_TESTS_URL), DataFrame);
     tests = unstack(tests, :Aika, :Mittari, :val);
     select!(tests, [:Aika, :Testausmäärä]);
     dropmissing!(tests);
 
     # Get data about cases.
-    data = CSV.read(download(THL_DATA_URL));
+    data = CSV.read(download(THL_DATA_URL), DataFrame);
     data = unstack(data, :Aika, :Alue, :val);
     _data = dropmissing(data);
     first_record = _data.Aika[1];
@@ -97,7 +97,8 @@ function download_covid_data()
     data = filter(r -> first_record <= r.Aika <= last_record, data);
 
     # Join datasets and set all missing values to zero.
-    data = join(data, tests, on = :Aika, kind = :outer);
+    data = outerjoin(data, tests, on = :Aika, makeunique = false,
+                     indicator = nothing, validate = (false, false));
     data = coalesce.(data, 0);
 
     # Save file.
