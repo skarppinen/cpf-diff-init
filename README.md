@@ -15,7 +15,7 @@ The relevant source code files are found in:
 <!--#### config.jl
 Configuration related to the project.
 
-#### Manifest.jl and Project.jl
+#### Manifest.toml and Project.toml
 Configuration files related to Julia packages used in this project. -->
 
 #### /data/covid/
@@ -24,14 +24,14 @@ Data used in the COVID-19 stochastic SEIR example.
 <!-- #### /src/config/parse_settings.jl
 Configuration related to the command line interface of the scripts in /src/scripts/. -->
 
-#### /src/lib/
+#### /src/julia/lib/
 Functionality related to particle filtering and implementations of the methods
 described in the paper.
 
-#### /src/models/
+#### /src/julia/models/
 Source code for the noisy random walk, stochastic volatility, multivariate normal and SEIR models.
 
-#### /src/scripts/
+#### /src/julia/scripts/
 Scripts for running the experiments.
 The full simulation experiments are computationally intensive, and the script
 `download-simulation-summaries.jl` can be used to download the (postprocessed)

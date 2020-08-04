@@ -42,7 +42,7 @@ const DATA_SIM_SEED = 75399237;
 # Activate the environment related to the project (if not already activated).
 import Pkg
 if PROJECT_NAME != basename(dirname(Base.active_project()))
-    Pkg.activate(".");
+    Pkg.activate(PROJECT_ROOT);
 end
 
 # Setup Julia to only load code from standard library and active environment,
