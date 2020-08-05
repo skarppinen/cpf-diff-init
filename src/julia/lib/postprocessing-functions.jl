@@ -21,7 +21,9 @@ function parse_postprocess_args(ARGS)
     s = ArgParse.ArgParseSettings();
     ArgParse.@add_arg_table! s begin
         "--experiments", "-e"
-            help = "a string vector of experiments indicating which experiments to postprocess"
+            help = string("a string vector of experiments indicating which ",
+                          "experiments to postprocess. the possible experiment ",
+                           "names can be found in the source code of this script.")
             arg_type = Vector{String}
             required = true
         "--indirpath", "-i"

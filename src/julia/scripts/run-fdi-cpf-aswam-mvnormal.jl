@@ -107,7 +107,7 @@ for statedim in statedim_vec
             θ[:log_sigma] = log(sigma);
             rwmkernel.x0 .= zero(typeof(rwmkernel.x0));
 
-            # Run simulation with diffuse normal initialisation.
+            # Run simulation with diffuse initialisation.
             aai_cpf!(cpfout, inst, rwmkernel, θ;
                      resampling = resampling,
                      burnin = burnin,

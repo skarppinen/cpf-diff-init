@@ -17,7 +17,7 @@ if verbose
     println(string("Experiments are ", experiments));
 end
 
-# Mappings from simulation experiment to postprocessing function.
+# Mappings from simulation experiment name to postprocessing function.
 # The function should take the path to the folder where the raw data is as the
 # only input and return the postprocessed dataset.
 const EF_MAP = ["fdi-cpf-am-noisyar" => read_fdi_cpf_sim,

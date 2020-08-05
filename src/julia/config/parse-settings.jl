@@ -65,7 +65,7 @@ function parse_fdi_cpf_noisyar_sv_args(ARGS)
             help = "should information regarding progress of simulations be printed"
             action = :store_true
         "--outfolder", "-o"
-            help = "the output folder where to save data. if empty, use script default"
+            help = "the output folder where to save data. if empty, use a default computed in the script"
             arg_type = String
             default = ""
     end;
@@ -104,18 +104,18 @@ function parse_fdi_cpf_mvnormal_args(ARGS)
             arg_type = Vector{Int}
             required = true
         "--gamma"
-            help = "adaptation parameter gamma"
+            help = "ASWAM adaptation parameter gamma"
             arg_type = Float64
             default = 2.0/3.0
         "--max_eta"
-            help = "adaptation parameter max_eta"
+            help = "ASWAM adaptation parameter max_eta"
             arg_type = Float64
             default = 0.5
         "--verbose", "-v"
             help = "should information regarding progress of simulations be printed"
             action = :store_true
         "--outfolder", "-o"
-            help = "the output folder where to save data. if empty, use script default"
+            help = "the output folder where to save data. if empty, use a default computed in the script"
             arg_type = String
             default = ""
     end;
@@ -179,7 +179,7 @@ function parse_dgi_cpf_noisyar_sv_args(ARGS)
             help = "print information about progress?"
             action = :store_true
         "--outfolder", "-o"
-            help = "the output folder where to save data. if empty, use script default"
+            help = "the output folder where to save data. if empty, use a default computed in the script"
             arg_type = String
             default = ""
     end;
@@ -225,18 +225,18 @@ function parse_dpg_cpf_noisyar_sv_args(ARGS)
             help = "should M1 be fully diffuse or normal. if given, sigma_x1 is ignored"
             action = :store_true
         "--gamma"
-            help = "adaptation parameter gamma"
+            help = "RAM adaptation parameter gamma"
             arg_type = Float64
             default = 2.0/3.0
         "--max_eta"
-            help = "adaptation parameter max_eta"
+            help = "RAM adaptation parameter max_eta"
             arg_type = Float64
             default = 0.5
         "--verbose", "-v"
             help = "should information regarding progress of simulations be printed"
             action = :store_true
         "--outfolder", "-o"
-            help = "the output folder where to save data. if empty, use script default"
+            help = "the output folder where to save data. if empty, use a default computed in the script"
             arg_type = String
             default = ""
     end;
@@ -267,11 +267,11 @@ function parse_fdi_pg_seir_args(ARGS)
             arg_type = Int
             required = true
         "--ram_gamma"
-            help = "adaptation parameter gamma for RAM"
+            help = "RAM adaptation parameter gamma"
             arg_type = Float64
             default = 2.0/3.0
         "--ram_max_eta"
-            help = "adaptation parameter max_eta for RAM"
+            help = "RAM adaptation parameter max_eta"
             arg_type = Float64
             default = 0.5
         "--aux_target"
@@ -301,8 +301,7 @@ function parse_fdi_pg_seir_args(ARGS)
             arg_type = Int
             required = true
         "--outfolder", "-o"
-            help = "the output folder where to save data. if empty, use a default
-                    computed in the script."
+            help = "the output folder where to save data. if empty, use a default computed in the script."
             arg_type = String
             default = ""
         "--verbose", "-v"
@@ -346,8 +345,7 @@ function parse_dpg_cpf_seir_args(ARGS)
             arg_type = Int
             required = true
         "--outfolder", "-o"
-            help = "the output folder where to save data. if empty, use a default
-                    computed in the script."
+            help = "the output folder where to save data. if empty, use a default computed in the script."
             arg_type = String
             default = ""
         "--verbose", "-v"
@@ -361,9 +359,9 @@ function parse_diffinit_poor_mixing_args(ARGS)
     s = ArgParse.ArgParseSettings();
     ArgParse.@add_arg_table! s begin
         "--outfolder", "-o"
-            help = "the output folder where to save data. if empty, use script default"
+            help = string("the output folder where to save data. ",
+                          "if empty, use the default in the script file.")
             arg_type = String
-            default = ""
     end;
     ArgParse.parse_args(ARGS, s);
 end

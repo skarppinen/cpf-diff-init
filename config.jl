@@ -7,7 +7,6 @@ const AFloat = AbstractFloat;
 
 # Globals for referencing certain paths in the project.
 const PROJECT_ROOT = @__DIR__;
-const PROJECT_NAME = basename(PROJECT_ROOT);
 const SRC_PATH = joinpath(PROJECT_ROOT, "src");
 const LIB_PATH = joinpath(SRC_PATH, "julia", "lib");
 const MODELS_PATH = joinpath(SRC_PATH, "julia", "models");
@@ -39,11 +38,21 @@ const SIMULATION_DATA_URL = "https://nextcloud.jyu.fi/index.php/s/zjeiwDoxaegGcR
 # sampling and all variability is in the parameters.
 const DATA_SIM_SEED = 75399237;
 
+# Run function `f` and suppress output.
+function silently(f)
+    stdout_orig = deepcopy(stdout);
+    (rd, wr) = redirect_stdout();
+    f();
+    close(wr);
+    redirect_stdout(stdout_orig);
+    read(rd, String);
+end
+
 # Activate the environment related to the project (if not already activated).
 import Pkg
-if PROJECT_NAME != basename(dirname(Base.active_project()))
+silently() do
     Pkg.activate(PROJECT_ROOT);
-end
+end;
 
 # Setup Julia to only load code from standard library and active environment,
 # and LIB_PATH.
