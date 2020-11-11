@@ -12,9 +12,15 @@ using JLD2
 using StatsBase
 using Distributions
 
-## Generate the plots path.
-mkpath(PLOTS_PATH);
-println(string("Producing plots to ", PLOTS_PATH, "."));
+## Set output folders (and plotting width).
+plots_folder = PLOTS_PATH;
+mkpath(plots_folder);
+println(string("Producing figures to ", plots_folder));
+max_width = 84;
+
+mix_summ_folder = joinpath(RESULTS_PATH, "summaries");
+mkpath(mix_summ_folder);
+println(string("Producing mixing summary of the SEIR example to ", mix_summ_folder));
 
 ## Load data.
 dpg_cpf_seir = load_summary("dpg-cpf-seir-summary.jld2");
@@ -97,7 +103,7 @@ mix_stats = let
     α = quantile(Normal(0, 1), 0.975);
     for m in unique(vardf[!, :method])
         data = filter(r -> r[:method] == m, vardf);
-        for s in setdiff(names(data), [:method, :iteration])
+        for s in setdiff(names(data), ["method" "iteration"])
             x = data[!, s];
 
             # Neff confint.
@@ -132,16 +138,17 @@ mix_stats = let
     d;
 end |> x -> sort!(x, [:id, :variable]);
 
-mkpath(joinpath(RESULTS_PATH, "summaries"));
 let filename = "fdi-vs-dpg-seir-variable-mixing-summary.jld2"
-    outpath = joinpath(RESULTS_PATH, "summaries", filename);
+    outpath = joinpath(mix_summ_folder, filename);
     jldopen(outpath, "w") do file
         file["out"] = mix_stats;
     end;
 end;
 
+# Raw string directly copypasteable to .tex.
 dpg_fdi_tab_values = let
-    var_ord = [:e_init, :i_init, :R0_init, :sigma, :p];
+    #var_ord = [:e_init, :i_init, :R0_init, :sigma, :p];
+    var_ord = ["e_init", "i_init", "R0_init", "sigma", "p"];
 
     d = select(mix_stats, [:id, :variable, :IACT, :neff, :neff_ci]) |>
     x -> filter(r -> r[:variable] in var_ord, x) |>
@@ -171,8 +178,7 @@ end;
 
 ## Plots
 # Traceplots of initial states and parameters per method.
-function plot_seir_traces(; show::Bool = false, locations::Vector{String},
-                            type::String = "pdf")
+function plot_seir_traces()
     R"""
     library(tidyr)
     library(ggplot2)
@@ -207,7 +213,7 @@ function plot_seir_traces(; show::Bool = false, locations::Vector{String},
 
     plot_traces <- function(d) {
         ggplot(d, aes(x = iteration, y = value)) +
-        geom_line(alpha = 0.8) +
+        geom_line(alpha = 0.8, size = SIZE_DEFAULTS[["linewidth"]]) +
         facet_grid(param ~ method, switch = "y", scales = "free_y",
                    labeller = label_parsed) +
         scale_x_continuous(expand = expand, breaks = xticks, labels = xticknames) +
@@ -226,16 +232,18 @@ function plot_seir_traces(; show::Bool = false, locations::Vector{String},
     }
     plt <- plot_traces(plot_data)
 
-        filename <- "seir-traces"
-        save_plot(plt, filename, w = 6, h = 3, show = $show,
-                  locations = $locations, type = "pdf")
+    filepath <- file.path($plots_folder, "seir-traces.pdf")
+    hw_ratio <- 3.25 / 6
+    ggsave(filepath, plt, width = $max_width, height = hw_ratio * $max_width,
+           units = "mm")
+    plt
     """
 end
-plot_seir_traces(show = true, locations = ["default"])
+plot_seir_traces()
 
 
 ## Plots of autocorrelation per model and parameter.
-function plot_ac_per_method_and_param(; show::Bool = false, locations)
+function plot_ac_per_method_and_param()
     let VARS = [:sigma, :p, :s_init, :e_init, :i_init, :R0_init]
         data = stack(vardf, VARS; variable_name = :variable, value_name = :value)
         data[!, :variable] .= string.(data[!, :variable]);
@@ -271,7 +279,7 @@ function plot_ac_per_method_and_param(; show::Bool = false, locations)
         filter(variable != "S[1]")
 
         plt <- ggplot(plot_data, aes(x = lag, y = ac)) +
-        geom_line(aes(linetype = method)) +
+        geom_line(aes(linetype = method), size = SIZE_DEFAULTS[["linewidth"]]) +
         facet_wrap(~ variable, labeller = label_parsed) +
         scale_x_continuous(breaks = seq(0, 50, by = 10), expand = expand) +
         scale_y_continuous(breaks = seq(0.0, 1.0, by = 0.2), expand = expand) +
@@ -282,15 +290,18 @@ function plot_ac_per_method_and_param(; show::Bool = false, locations)
               legend.title = element_blank(),
               legend.margin = margin(0, 0, -10, 0))
 
-        filename <- "seir-ac-per-method-and-param.pdf"
-        save_plot(plt, filename, w = 5, h = 3, show = $show, locations = $locations)
+        filepath <- file.path($plots_folder, "seir-ac-per-method-and-param.pdf")
+        hw_ratio <- 3.25 / 5
+        ggsave(filepath, plt, width = $max_width, height = hw_ratio * $max_width,
+               units = "mm")
+        plt
         """
     end
 end
-plot_ac_per_method_and_param(show = true, locations = ["default"])
+plot_ac_per_method_and_param()
 
 ## Plots of density estimates per model and parameter.
-function plot_dens_per_method_and_param(; show::Bool = false, locations)
+function plot_dens_per_method_and_param()
     let VARS = [:sigma, :p, :s_init, :e_init, :i_init, :R0_init]
         data = stack(vardf, VARS; variable_name = :variable, value_name = :value)
         data[!, :variable] .= string.(data[!, :variable]);
@@ -318,7 +329,8 @@ function plot_dens_per_method_and_param(; show::Bool = false, locations)
 
             plt <- ggplot(plot_data, aes(x = value)) +
             stat_density(aes(linetype = method),
-                         geom = "line", position = "identity") +
+                         geom = "line", position = "identity",
+                         size = SIZE_DEFAULTS[["linewidth"]]) +
             facet_wrap(~ variable, labeller = label_parsed, scales = "free") +
             scale_x_continuous(expand = expand) +
             theme_bw() +
@@ -330,15 +342,18 @@ function plot_dens_per_method_and_param(; show::Bool = false, locations)
             axis.text = element_text(size = 7),
             strip.text = element_text(size = SIZE_DEFAULTS[["strip_text_size"]]))
 
-            filename <- "seir-dens-per-method-and-param.pdf"
-            save_plot(plt, filename, w = 6, h = 3, show = $show, locations = $locations)
+            filepath <- file.path($plots_folder, "seir-dens-per-method-and-param.pdf")
+            hw_ratio <- 3.25 / 5
+            ggsave(filepath, plt, width = $max_width, height = hw_ratio * $max_width,
+                   units = "mm")
+            plt
             """
     end
 end
-plot_dens_per_method_and_param(; show = true, locations = ["default"])
+plot_dens_per_method_and_param()
 
 # Plot relative IACT of FDI-PG wrt that of DPG-BS for state variables wrt time.
-function plot_rel_iact_fdi_dpg(; show::Bool = false, locations)
+function plot_rel_iact_fdi_dpg()
 
     R"""
     library(ggplot2)
@@ -353,7 +368,7 @@ function plot_rel_iact_fdi_dpg(; show::Bool = false, locations)
     expand <- rep(0.005, 2)
 
     plt <- ggplot(d, aes(x = date, y = rel_IACT)) +
-    geom_line(alpha = 0.6) +
+    geom_line(alpha = 0.6, size = SIZE_DEFAULTS[["linewidth"]]) +
     geom_hline(aes(yintercept = 1), linetype = "dashed") +
     scale_x_date(expand = expand, breaks = daybreaks) +
     #scale_y_continuous(breaks = seq(0.0, 1.0, by = 0.1)) +
@@ -364,17 +379,21 @@ function plot_rel_iact_fdi_dpg(; show::Bool = false, locations)
     axis.text.x = element_text(angle = 30, hjust = 1),
     strip.text.y.right = element_text(angle = 0))
 
-    filename <- "seir-rel-iact-fdi-dpg.pdf"
-    save_plot(plt, filename, w = 5, h = 4, show = $show, locations = $locations)
+    filepath <- file.path($plots_folder, "seir-rel-iact-fdi-dpg.pdf")
+    hw_ratio <- 4 / 5
+    ggsave(filepath, plt, width = $max_width, height = hw_ratio * $max_width,
+           units = "mm")
+    plt
     """
 end
-plot_rel_iact_fdi_dpg(show = true, locations = ["default"]);
+plot_rel_iact_fdi_dpg();
 
 ## Plot distribution of R0 (1) and posterior predictive check (2) for
 # in the fully diffuse case.
 
 include(joinpath(LIB_PATH, "pfilter.jl"));
 include(joinpath(MODELS_PATH, "SEIR", "SEIR_model.jl"));
+Random.seed!(20201104);
 
 """
 Make a "posterior predictive check", i.e return datasets
@@ -407,7 +426,7 @@ function quantiles(mat::AMat{<: Real},
     mapslices(x -> quantile(x, qs), mat, dims = 2);
 end
 
-function plot_R0_and_postpred(; show::Bool = false, locations)
+function plot_R0_and_postpred()
     # Dataset of quantiles.
     R0_data = let
         fdi_R0_qs = quantiles(fdi_pg_seir.sim.R0);
@@ -447,7 +466,8 @@ function plot_R0_and_postpred(; show::Bool = false, locations)
                           text_size = 2) {
         d <- data.frame(date = date, label = label)
         list(geom_segment(data = d, mapping = aes(x = date, xend = date),
-                     y = 0, yend = tick_height, alpha = 0.7, inherit.aes = FALSE),
+                     y = 0, yend = tick_height, alpha = 0.7, inherit.aes = FALSE,
+                     size = SIZE_DEFAULTS[["linewidth"]]),
         annotate(geom = "text", label = label,
                  x = date, y = text_height, hjust = 0, size = text_size))
     }
@@ -480,13 +500,13 @@ function plot_R0_and_postpred(; show::Bool = false, locations)
 
     theme_last <- theme_bw() +
                   theme(axis.title.x = element_blank(),
-                        axis.title.y = element_text(size = SIZE_DEFAULTS[["axis_title_size"]]),
-                        axis.text.y = element_text(size = SIZE_DEFAULTS[["axis_text_size"]]),
+                        axis.title.y = element_text(size = SIZE_DEFAULTS[["axis_title_size"]] - 1),
+                        axis.text.y = element_text(size = SIZE_DEFAULTS[["axis_text_size"]] - 1),
                         axis.text.x = element_text(angle = 30, hjust = 1,
-                                                   size = SIZE_DEFAULTS[["axis_text_size"]]),
+                                                   size = SIZE_DEFAULTS[["axis_text_size"]] - 1),
                         plot.margin = margin(0, 0, 0, 0))
 
-    text_size <- 2
+    text_size <- 1
     plt_r0_fd <- filter(R0_data, method == "fd") %>%
         ggplot(aes(x = time)) +
             ## Changes in timeline:
@@ -509,7 +529,7 @@ function plot_R0_and_postpred(; show::Bool = false, locations)
             add_event(restaurants_open, " Restaurants\n open",
                       tick_height = 1.7, text_size = text_size) +
 
-            geom_line(aes(y = q50)) +
+            geom_line(aes(y = q50), size = SIZE_DEFAULTS[["linewidth"]]) +
             geom_ribbon(aes(ymin = q025, ymax = q975), alpha = 0.5) +
             geom_ribbon(aes(ymin = q25, ymax = q75), alpha = 0.75) +
             scale_x_date(expand = expand, breaks = xbreaks) +
@@ -521,9 +541,9 @@ function plot_R0_and_postpred(; show::Bool = false, locations)
     orig_data <- $COVID_DATA
 
     plt_post_pred <- ggplot(post_pred_data, aes(x = time, y = value, group = sim)) +
-        geom_point(color = "gray", alpha = 0.4, size = 1) +
+        geom_point(color = "gray", alpha = 0.4, size = 0.1) +
         geom_point(data = orig_data, aes(x = Date, y = Cases), fill = "black",
-                   inherit.aes = FALSE, size = 1, alpha = 0.6) +
+                   inherit.aes = FALSE, size = 0.1, alpha = 0.6) +
         scale_x_date(breaks = xbreaks, expand = expand) +
         scale_y_continuous(breaks = seq(0, 500, by = 50), expand = expand) +
         labs(y = "No. new positive cases") +
@@ -531,8 +551,11 @@ function plot_R0_and_postpred(; show::Bool = false, locations)
 
     plt <- (plt_r0_fd / plt_post_pred) + theme(plot.margin = unit(c(0, 0, 0, 0), "pt"))
 
-    filename <- "seir-fd-r0-and-postpred.pdf"
-    save_plot(plt, filename, h = 3, w = 6, show = $show, locations = $locations)
+    filepath <- file.path($plots_folder, "seir-fd-r0-and-postpred.pdf")
+    hw_ratio <- 3 / 6
+    ggsave(filepath, plt, width = $max_width, height = hw_ratio * $max_width,
+           units = "mm")
+    plt
     """
 end
-plot_R0_and_postpred(show = true, locations = ["default"])
+plot_R0_and_postpred()

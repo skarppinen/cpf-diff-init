@@ -2,18 +2,19 @@
 # in src/julia/scripts
 
 using RCall
-
 R"""
 ## Some themes and helpers for making plots.
 library(ggplot2)
 
 # Defaults for various sizes in plots.
 SIZE_DEFAULTS <- list(
-  axis_text_size = 6,
-  axis_title_size = 8,
-  strip_text_size = 7,
-  legend_text_size = 7,
-  legend_title_size = 7
+  linewidth = 0.25,
+  pointsize = 0.5,
+  axis_text_size = 5,
+  axis_title_size = 5,
+  strip_text_size = 5,
+  legend_text_size = 5,
+  legend_title_size = 5
 )
 
 # Default theme for faceted plot.
@@ -35,22 +36,4 @@ make_numeric_factor <- function(x, add_str = "") {
    ordered_names <- paste0(add_str, x)
    factor(ordered_names, levels = sorted_uniq_names)
 }
-
-
-PLOT_LOCATIONS <- c(default = $PLOTS_PATH)
-# Save plots to various locations.
-save_plot <- function(plt, filename, w, h, locations = c("default"),
-                      show = FALSE, type = "pdf", ...) {
-    if (!grepl(paste0("\\.", type, "$"), filename)) {
-        filename <- paste0(filename, ".", type)
-    }
-    for (loc in locations) {
-        filepath <- file.path(PLOT_LOCATIONS[loc], filename)
-        ggsave(filepath, plt, device = type, width = w, height = h, ...)
-    }
-    if (show) {
-        print(plt)
-    }
-}
-
 """
