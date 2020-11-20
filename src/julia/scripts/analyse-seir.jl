@@ -103,7 +103,7 @@ mix_stats = let
     α = quantile(Normal(0, 1), 0.975);
     for m in unique(vardf[!, :method])
         data = filter(r -> r[:method] == m, vardf);
-        for s in setdiff(names(data), ["method" "iteration"])
+        for s in setdiff(names(data), ["method", "iteration"])
             x = data[!, s];
 
             # Neff confint.
@@ -139,13 +139,12 @@ mix_stats = let
 end |> x -> sort!(x, [:id, :variable]);
 
 let filename = "fdi-vs-dpg-seir-variable-mixing-summary.jld2"
-    outpath = joinpath(mix_summ_folder, filename);
+    outpath = joinpath(RESULTS_PATH, "summaries", filename);
     jldopen(outpath, "w") do file
         file["out"] = mix_stats;
     end;
 end;
 
-# Raw string directly copypasteable to .tex.
 dpg_fdi_tab_values = let
     #var_ord = [:e_init, :i_init, :R0_init, :sigma, :p];
     var_ord = ["e_init", "i_init", "R0_init", "sigma", "p"];
@@ -175,6 +174,7 @@ dpg_fdi_tab_values = let
     x -> mapslices(s -> reduce((x, y) -> x * " & " * y, s), x, dims = 2) |>
     x -> reduce((y, z) -> y * "\\\\ \n" * z, x);
 end;
+
 
 ## Plots
 # Traceplots of initial states and parameters per method.

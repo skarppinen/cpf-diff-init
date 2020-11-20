@@ -437,16 +437,16 @@ function plot_mvnormal_logiact_vs_target()
     plt <- ggplot(df, aes(x = target, y = log_mean_iact)) +
     geom_line(aes(color = factor(npar)), size = SIZE_DEFAULTS[["linewidth"]]) +
     labs(x = "Target", y = TeX("$\\log{(\\bar{IACT})}$")) +
-    facet_wrap(~ dim_factor, nrow = 2, ncol = 5) +
+    facet_wrap(~ dim_factor, nrow = 5, ncol = 2) +
     scale_color_manual(values = nparcolors, name = "N") +
     scale_x_continuous(breaks = xbreaks, labels = xlabels, expand = expand) +
     scale_y_continuous(expand = expand) +
     theme_faceted +
-    theme(legend.position = "top",
+    theme(legend.position = "right",
           legend.margin = margin(0, 0, -10, 0))
 
     filepath <- file.path($plots_folder, "fdi-cpf-aswam-mvnormal-target-vs-log-mean-iact.pdf")
-    hw_ratio <- 3.25 / 5
+    hw_ratio <- 6 / 5
     ggsave(filepath, plt, width = $max_width, height = hw_ratio * $max_width,
            units = "mm")
     plt
@@ -526,7 +526,7 @@ function plot_dgi_cpf_beta_reps()
     filepath <- file.path($plots_folder,
                           paste0("dgi-cpf-log-mean-iact-beta-reps-npar-128-sigmax-1_0",
                                  "-sigmax1-50", "-", "sv", ".pdf"))
-    hw_ratio <- 1.5 / 3
+    hw_ratio <- 1 / 3
     ggsave(filepath, plt, width = $max_width, height = hw_ratio * $max_width,
            units = "mm")
     plt
@@ -534,7 +534,10 @@ function plot_dgi_cpf_beta_reps()
 end
 plot_dgi_cpf_beta_reps()
 
+##
 ## New plots with log(IACT * N) on y-axis.
+##
+
 function plot_fdi_cpf_vs_dpg_logiactn(model::AbstractString)
 
     plot_data = let
@@ -565,7 +568,7 @@ function plot_fdi_cpf_vs_dpg_logiactn(model::AbstractString)
     geom_line(size = SIZE_DEFAULTS[["linewidth"]]) +
     scale_linetype_manual(values = c("solid", "dashed", "dotted")) +
     facet_wrap(~ npar_fact, nrow = 2) +
-    labs(y = TeX("$\\log{(IACT \\times N)}$"), x = TeX("$\\sigma_x$")) +
+    labs(y = TeX("$\\log{(IRE)}$"), x = TeX("$\\sigma_x$")) +
     theme_faceted +
     theme(legend.position = "top",
     legend.title = element_blank(),
@@ -622,7 +625,7 @@ function plot_log_mean_iactn_wrt_target()
         scale_x_continuous(expand = expand, breaks = xbreaks, labels = xticks) +
         scale_linetype_manual(values = c("solid", "dotted")) +
         scale_alpha_manual(values = c(0.6, 1.0)) +
-        labs(x = "Target", y = TeX("$\\log{(\\bar{IACT \\times N})}$") ) +
+        labs(x = "Target", y = TeX("$\\log{(\\bar{IRE})}$") ) +
         theme_faceted +
         theme(legend.position = "top",
               legend.margin = margin(0, 0, -10, 0),
@@ -679,7 +682,7 @@ function plot_cpf_vs_opt_beta_logiactn(model::AbstractString)
     scale_linetype_manual(labels = list(TeX("CPF-BS"),
                                         TeX("DGI-CPF (best $\\beta$)")),
                           values = c("solid", "dashed")) +
-    labs(x = "Parameter configuration", y = TeX("$\\log{(IACT \\times N)}$")) +
+    labs(x = "Parameter configuration", y = TeX("$\\log{(IRE)}$")) +
       theme_faceted +
       theme(legend.position = "top",
             legend.title = element_blank(),
@@ -732,7 +735,7 @@ function log_mean_IACTn_wrt_tuning()
     geom_line(aes(linetype = model, alpha = model), size = SIZE_DEFAULTS[["linewidth"]]) +
     geom_hline(data = d_dpg, aes(yintercept = log_mean_iactn, linetype = model),
                show.legend = FALSE, size = SIZE_DEFAULTS[["linewidth"]]) +
-    labs(x = "Target", y = TeX("$\\log{(\\bar{IACT \\times N})}$") ) +
+    labs(x = "Target", y = TeX("$\\log{(\\bar{IRE})}$") ) +
     facet_wrap(~ factor(npar_fact), nrow = 2, ncol = 4) +
     scale_y_continuous(expand = expand, limits = c(NA, 11)) +
     scale_x_continuous(breaks = xbreaks, labels = xlabels,
